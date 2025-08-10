@@ -3,7 +3,7 @@ version = "1.0.0"
 target = "erlang"
 
 description = "WoW Classic flavored SRP6 implementation."
-licences = ["GPLv3"]
+licences = ["GPL-3.0"]
 repository = { type = "github", user = "glomdom", repo = "glurp6" }
 
 [dependencies]
