@@ -4,7 +4,7 @@ import gleam/string
 import glurp6/constants
 import glurp6/utils
 
-/// Returned x is little endian bitarray of size (20 * 8)
+/// Returned x is little endian bitarray of size `160 bits / 20 bytes`
 pub fn calculate_x(user: String, pass: String, salt: BitArray) -> BitArray {
   let up =
     string.concat([string.uppercase(user), ":", string.uppercase(pass)])
@@ -16,7 +16,7 @@ pub fn calculate_x(user: String, pass: String, salt: BitArray) -> BitArray {
   utils.pad(x_hash, 160)
 }
 
-/// Returned verifier is little endian bitarray of size (32 * 8)
+/// Returned verifier is little endian bitarray of size `256 bits / 32 bytes`
 pub fn calculate_password_verifier(
   user: String,
   pass: String,
@@ -31,6 +31,7 @@ pub fn calculate_password_verifier(
   utils.pad(v, 256)
 }
 
+/// Returned server public key is little endian bitarray of size `256 bits / 32 bytes`
 pub fn calculate_server_public_key(
   pass_verifier: BitArray,
   server_private_key: BitArray,
