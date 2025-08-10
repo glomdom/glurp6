@@ -31,16 +31,21 @@ fn reverse(bits: BitArray, acc: BitArray) -> BitArray {
 }
 
 pub fn mod_pow(base: Int, exp: Int, modulus: Int) -> Int {
+  case modulus {
+    1 -> 0
+    _ -> loop(base % modulus, exp, modulus, 1)
+  }
+}
+
+fn loop(base: Int, exp: Int, modulus: Int, acc: Int) -> Int {
   case exp {
-    0 -> 1
-    _ if exp % 2 == 0 -> {
+    0 -> acc
+
+    _ if exp % 2 != 0 -> loop(base, exp - 1, modulus, { acc * base } % modulus)
+    _ -> {
       let assert Ok(div) = int.divide(exp, 2)
-      let half = mod_pow(base, div, modulus)
-
-      { half * half } % modulus
+      loop({ base * base } % modulus, div, modulus, acc)
     }
-
-    _ -> { base * mod_pow(base, exp - 1, modulus) } % modulus
   }
 }
 
