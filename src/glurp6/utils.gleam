@@ -43,3 +43,14 @@ pub fn mod_pow(base: Int, exp: Int, modulus: Int) -> Int {
     _ -> { base * mod_pow(base, exp - 1, modulus) } % modulus
   }
 }
+
+pub fn pad(bits: BitArray, to: Int) -> BitArray {
+  let to_pad = bit_array.bit_size(bits) - to
+
+  case to_pad {
+    0 -> bits
+    _ if to_pad > 0 -> <<bits:bits, 0:size(to_pad)>>
+    _ if to_pad < 0 -> <<bits:bits-256>>
+    _ -> panic as "failed to pad bitarray"
+  }
+}
