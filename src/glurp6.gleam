@@ -36,11 +36,8 @@ pub fn calculate_server_public_key(
   pass_verifier: BitArray,
   server_private_key: BitArray,
 ) -> BitArray {
-  let verifier_size = bit_array.bit_size(pass_verifier)
-  let assert <<x_int:little-int-size(verifier_size)>> = pass_verifier
-
-  let key_size = bit_array.bit_size(server_private_key)
-  let assert <<b_int:little-int-size(key_size)>> = server_private_key
+  let x_int = utils.bits_to_int(pass_verifier, True)
+  let b_int = utils.bits_to_int(server_private_key, True)
 
   let key_int =
     {
@@ -53,4 +50,31 @@ pub fn calculate_server_public_key(
   let key = <<key_int:little-size(256)>>
 
   utils.pad(key, 256)
+}
+
+pub fn calculate_client_session_key(
+  client_private_key: BitArray,
+  server_public_key: BitArray,
+  x: BitArray,
+  u: BitArray,
+) -> BitArray {
+  let cpk_int = utils.bits_to_int(client_private_key, True)
+  let spk_int = utils.bits_to_int(server_public_key, True)
+  let x_int = utils.bits_to_int(x, True)
+  let u_int = utils.bits_to_int(u, True)
+
+  let session_key_int =
+    utils.mod_pow(
+      {
+        spk_int
+        - constants.k
+        * utils.mod_pow(constants.generator, x_int, constants.prime)
+      },
+      { cpk_int + u_int * x_int },
+      constants.prime,
+    )
+
+  let session_key = <<session_key_int:little-size(256)>>
+
+  utils.pad(session_key, 256)
 }
