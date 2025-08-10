@@ -1,4 +1,5 @@
 import gleam/bit_array
+import gleam/int
 
 pub fn be_to_le(bits: BitArray) -> BitArray {
   reverse_byte_order(bits)
@@ -26,5 +27,19 @@ fn reverse(bits: BitArray, acc: BitArray) -> BitArray {
     <<b:8, rest:bytes>> -> reverse(rest, <<b:8, acc:bits>>)
     <<>> -> acc
     _ -> acc
+  }
+}
+
+pub fn mod_pow(base: Int, exp: Int, modulus: Int) -> Int {
+  case exp {
+    0 -> 1
+    _ if exp % 2 == 0 -> {
+      let assert Ok(div) = int.divide(exp, 2)
+      let half = mod_pow(base, div, modulus)
+
+      { half * half } % modulus
+    }
+
+    _ -> { base * mod_pow(base, exp - 1, modulus) } % modulus
   }
 }

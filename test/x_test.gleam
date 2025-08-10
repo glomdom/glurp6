@@ -15,7 +15,7 @@ pub fn x_salt_values_test() {
       #(salt_str, expected_x_str) -> {
         let salt = salt_str |> utils.le_bits_from_be_hex
         let expected_x = expected_x_str |> utils.le_bits_from_be_hex
-        let x = glurp6.srp6_x("USERNAME123", "PASSWORD123", salt)
+        let x = glurp6.calculate_x("USERNAME123", "PASSWORD123", salt)
 
         assert x == expected_x
       }
@@ -36,7 +36,7 @@ pub fn x_values_test() {
     case parts {
       [user_str, pass_str, expected_x_str] -> {
         let expected_x = expected_x_str |> utils.le_bits_from_be_hex
-        let x = glurp6.srp6_x(user_str, pass_str, salt)
+        let x = glurp6.calculate_x(user_str, pass_str, salt)
 
         assert x == expected_x
       }
