@@ -36,7 +36,18 @@ pub fn mod_pow(base: Int, exp: Int, modulus: Int) -> Int {
   case modulus {
     1 -> 0
 
-    _ -> loop(base % modulus, exp, modulus, 1)
+    _ -> {
+      let base = pos_mod(base, modulus)
+      loop(base, exp, modulus, 1)
+    }
+  }
+}
+
+fn pos_mod(n: Int, m: Int) -> Int {
+  let r = n % m
+  case r < 0 {
+    True -> r + m
+    False -> r
   }
 }
 
@@ -61,5 +72,21 @@ pub fn pad(bits: BitArray, to: Int) -> BitArray {
     _ if to_pad > 0 -> <<bits:bits, 0:size(to_pad)>>
     _ if to_pad < 0 -> <<bits:bits-256>>
     _ -> panic as "failed to pad bitarray"
+  }
+}
+
+pub fn bits_to_int(bits: BitArray, little: Bool) -> Int {
+  let size = bit_array.bit_size(bits)
+
+  case little {
+    True -> {
+      let assert <<int:little-int-size(size)>> = bits
+      int
+    }
+
+    False -> {
+      let assert <<int:little-int-size(size)>> = bits
+      int
+    }
   }
 }
