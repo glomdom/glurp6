@@ -78,3 +78,26 @@ pub fn calculate_client_session_key(
 
   utils.pad(session_key, 256)
 }
+
+pub fn calculate_server_session_key(
+  client_public_key: BitArray,
+  verifier: BitArray,
+  u: BitArray,
+  server_private_key: BitArray,
+) -> BitArray {
+  let cpk_int = utils.bits_to_int(client_public_key, True)
+  let verifier_int = utils.bits_to_int(verifier, True)
+  let u_int = utils.bits_to_int(u, True)
+  let spk_int = utils.bits_to_int(server_private_key, True)
+
+  let session_key_int =
+    utils.mod_pow(
+      cpk_int * utils.mod_pow(verifier_int, u_int, constants.prime),
+      spk_int,
+      constants.prime,
+    )
+
+  let session_key = <<session_key_int:little-size(256)>>
+
+  utils.pad(session_key, 256)
+}
