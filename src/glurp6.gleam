@@ -4,7 +4,17 @@ import gleam/string
 import glurp6/constants
 import glurp6/utils
 
-/// Returned x is little endian bitarray of size `160 bits / 20 bytes`
+/// Calculates the `x` value using `SHA1( s | SHA1( USER | : | PASS ))`
+/// 
+/// Returned `x` value is little endian bitarray of size `160 bits a.k.a. 20 bytes`
+/// 
+/// ## Examples
+/// 
+/// ```gleam
+/// calculate_x("USERNAME123", "PASSWORD123", salt_bits)
+/// // -> x value bits
+/// ```
+/// 
 pub fn calculate_x(user: String, pass: String, salt: BitArray) -> BitArray {
   let up =
     string.concat([string.uppercase(user), ":", string.uppercase(pass)])
@@ -16,7 +26,17 @@ pub fn calculate_x(user: String, pass: String, salt: BitArray) -> BitArray {
   utils.pad(x_hash, 160)
 }
 
-/// Returned verifier is little endian bitarray of size `256 bits / 32 bytes`
+/// Calculates the password verifier using `g^x % N`
+/// 
+/// Returned verifier is little endian bitarray of size `256 bits a.k.a. 32 bytes`
+/// 
+/// ## Examples
+/// 
+/// ```gleam
+/// calculate_password_verifier("USERNAME123", "PASSWORD123", salt_bits)
+/// // -> password verifier bits
+/// ```
+/// 
 pub fn calculate_password_verifier(
   user: String,
   pass: String,
@@ -31,7 +51,17 @@ pub fn calculate_password_verifier(
   utils.pad(v, 256)
 }
 
-/// Returned server public key is little endian bitarray of size `256 bits / 32 bytes`
+/// Calculates the server public key using `(k * v + (g^b % N)) % N`
+/// 
+/// Returned public key is little endian bitarray of size `256 bits a.k.a. 32 bytes`
+/// 
+/// ## Examples
+/// 
+/// ```gleam
+/// calculate_password_verifier(password_verifier_bits, server_private_key_bits)
+/// // -> server public key bits
+/// ```
+/// 
 pub fn calculate_server_public_key(
   pass_verifier: BitArray,
   server_private_key: BitArray,
@@ -52,6 +82,21 @@ pub fn calculate_server_public_key(
   utils.pad(key, 256)
 }
 
+/// Calculates the client session key using `(B - (k * (g^x % N)))^(a + u * x) % N`
+/// 
+/// Returned session key is little endian bitarray of size `256 bits a.k.a. 32 bytes`
+/// 
+/// ## Examples
+/// 
+/// ```gleam
+/// calculate_client_session_key(
+///   client_private_key_bits,
+///   server_public_key_bits,
+///   x_bits, u_bits
+/// )
+/// // -> client session key bits
+/// ```
+/// 
 pub fn calculate_client_session_key(
   client_private_key: BitArray,
   server_public_key: BitArray,
@@ -79,6 +124,21 @@ pub fn calculate_client_session_key(
   utils.pad(session_key, 256)
 }
 
+/// Calculates the server session key using `(A * (v^u % N))^b % N`
+/// 
+/// Returned session key is little endian bitarray of size `256 bits a.k.a. 32 bytes`
+/// 
+/// ## Examples
+/// 
+/// ```gleam
+/// calculate_server_session_key(
+///   client_public_key_bits,
+///   verifier_bits, x_bits, u_bits,
+///   server_private_key_bits,
+/// )
+/// // -> server session key bits
+/// ```
+/// 
 pub fn calculate_server_session_key(
   client_public_key: BitArray,
   verifier: BitArray,
@@ -102,6 +162,20 @@ pub fn calculate_server_session_key(
   utils.pad(session_key, 256)
 }
 
+/// Calculates the `u` value using `SHA1( A | B )`
+/// 
+/// Returned `u` value is little endian bitarray of size `160 bits a.k.a. 20 bytes`
+/// 
+/// ## Examples
+/// 
+/// ```gleam
+/// calculate_u(
+///   client_public_key_bits,
+///   server_public_key_bits,
+/// )
+/// // -> u value bits
+/// ```
+/// 
 pub fn calculate_u(
   client_public_key: BitArray,
   server_public_key: BitArray,
