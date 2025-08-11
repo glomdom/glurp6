@@ -10,9 +10,3 @@ Gleam implementation of WoW Classic flavored SRP6.
 ```sh
 gleam add glurp6@1
 ```
-
-## Examples
-
-Find examples in tests.
-
-Further documentation can be found at <https://hexdocs.pm/glurp6>.
