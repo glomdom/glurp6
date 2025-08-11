@@ -101,3 +101,12 @@ pub fn calculate_server_session_key(
 
   utils.pad(session_key, 256)
 }
+
+pub fn calculate_u(
+  client_public_key: BitArray,
+  server_public_key: BitArray,
+) -> BitArray {
+  let u = crypto.hash(Sha1, <<client_public_key:bits, server_public_key:bits>>)
+
+  utils.pad(u, 160)
+}
